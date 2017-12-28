@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>2048</title>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        
+    </head>
+    <body>
+         <header>
+			<nav>
+				<ul>
+					<li><a href="#">Acceuil</a></li>
+					<li><a href="règles.xhtml">Comment jouer</a></li>
+					<li><a href="Presentation.xhtml">Rapport</a></li>
+				</ul>
+			</nav>
+        </header>
+        <div class="vide">
+		</div>
+       <div class="d">
+		<h1 class="titre">2048</h1>
+		<h2 id="b">Score:<div id="score"></div></h2>
+	   </div>
+		 
+		  
+        
+        <div id="start">
+			<a  id="a" onclick="return charger();">Recommencer</a>
+        </div>
+        
+        <div id="container"></div>
+         <script type="text/javascript"> <![CDATA[
+            
+            var taille= prompt("Donner une taille pour la grille");
+            var cpt=0;
+          
+			var mouv=false;
+			var array=[];
+			
+
+            function charger(){                /*pour initialiser le jeu*/
+            var html='<table border="2">';
+            for(var i=0; i<taille; i++){
+                html+='<tr>';
+                for(var j=0; j<taille; j++){
+                    var pos= i+""+j;
+                    html += '<td align="center" height="60" width="60" id="'+pos+'" ></td>';
+                }
+                html += '</tr>';
+            }
+            html +='</table>';
+            document.getElementById("container").innerHTML= html;
+            var pos1=alea();
+            var pos2=alea();
+            do{
+                pos2=alea();
+            }while(pos1==pos2);
+            
+            document.getElementById(pos1).innerHTML="2";
+            document.getElementById(pos2).innerHTML="2";
+             cpt=0;
+            document.getElementById(pos1).style.background=couleur(2);
+            document.getElementById(pos2).style.background=couleur(2);
+			document.getElementById("score").innerHTML= cpt;
+			return false;
+           }
+
+
+            function couleur(valeur){      /*couleur pr le background en fonction des valeurs*/
+               var col="#FFF";
+               switch(valeur){
+                   case 2:
+                   col="#C0C0C0";
+                   break;
+
+                   case 4:
+                   col="#F7BE81";
+                   break;
+
+                   case 8:
+                   col="#F4661B";
+                   break;
+
+                   case 16:
+                   col="#FF8C00";
+                   break;
+                   
+                   case 32:
+                   col="E67E30";
+                   break;
+                   case 64:
+                   col="#FF4500";
+                   break;
+                   case 128:
+                   col="#FF5733";
+                   break;
+				   case 256:
+                   col="#FEF86C";
+                   break;
+				   case 1024:
+                   col="#FEF86C";
+                   break;
+                   case 2048:
+                   col="#FFE436";
+                   break;
+                   default: col="#FFF";
+               }
+               return col;
+           }   
+                 
+
+           function alea(){                /*fonction aléatoire */
+               var max= taille-1;
+               var min=0;
+               var a= Math.floor(Math.random()*(max-min+1)+min);
+               var b= Math.floor(Math.random()*(max-min+1)+min);
+               return a+""+b;
+           }
+
+         /*function loser1(){
+               var bol= true;
+               for(var i=0; i<taille-1; i++){
+                   for(var j=0; j<taille-2; j++){
+                        x= parseInt(document.getElementById(i+""+j).innerHTML);
+                        y= parseInt(document.getElementById(i+""+(j+1)).innerHTML);
+                       if(x==y){
+                           bol=false;
+                           break;
+                       }
+                   }
+               }
+               return bol;
+           }
+
+
+           function loser2(){
+               var bol= true;
+               for(var j=0; j<taille-1; j++){
+                   for(var i=0; i<taille-2; i++){
+                       var x= parseInt(document.getElementById(i+""+j).innerHTML);
+                       var y= parseInt(document.getElementById((i+1)+""+j).innerHTML);
+                       if(x==y){
+                           bol=false;
+                           break;
+                       }
+                   }
+               }
+               return bol;
+           }
+
+           function over(){
+               if(loser1 && loser2){
+                   alert("Vous avez perdu");
+               }
+               return false;
+           }*/
+
+           
+
+           document.onkeydown= function(event){
+               if(event.keyCode==37){
+                   gauche();
+               }
+               if(event.keyCode==38){
+                   haut();
+               }
+               if(event.keyCode==39){
+                   droite();
+               }
+               if(event.keyCode==40){
+                   bas();
+               }
+               
+           }
+
+
+        /*les fonctions de Deplacement*/  
+        function haut() {
+		mouv = false;
+		array = [];
+		for(var j=0;j<=(taille-1);j++) {
+			for(var i=0;i<=(taille-1);i++) {
+				var ni = i+""+j;
+				if(document.getElementById(ni).innerHTML != "") {
+					haut1(ni);
+				}
+			}
+		}
+		if(mouv == true) {
+			ajout();
+		}
+		return false;
+	}
+	function haut1(ni) {		
+		if(!ni.startsWith(0)) {
+			var tab = ni.split("");
+			var a = parseInt(tab[0]);
+			var b = parseInt(tab[1]);
+			for(var k=(a-1);k>=0;k--) {
+				var di= k+""+b;
+				if(document.getElementById(di).innerHTML != "") {
+					var x = parseInt(document.getElementById((k+1)+""+b).innerHTML);
+					var y = parseInt(document.getElementById(di).innerHTML);
+					if(x == y) {
+						if(array.indexOf(di) == -1){
+							array.push(di);
+							document.getElementById(di).innerHTML = (x+y);
+							document.getElementById(di).style.backgroundColor = couleur((x+y));
+							document.getElementById((k+1)+""+b).innerHTML = "";
+							document.getElementById((k+1)+""+b).style.backgroundColor = "#FFF";
+							mouv = true;
+							cpt += (x+y);
+							document.getElementById("score").innerHTML= cpt;
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(di).innerHTML = document.getElementById((k+1)+""+b).innerHTML;
+					document.getElementById(di).style.backgroundColor = document.getElementById((k+1)+""+b).style.backgroundColor;
+					document.getElementById((k+1)+""+b).innerHTML = "";
+					document.getElementById((k+1)+""+b).style.backgroundColor = "#FFF";
+					mouv = true;
+				}
+			}
+		}
+		return false;
+	}
+    function bas() {
+		mouv = false;
+		array = [];
+		for(var i=0;i<=(taille-1);i++) {
+			for(var j=(taille-1);j>=0;j--) {
+				var ni = j+""+i;
+				if(document.getElementById(ni).innerHTML != "") {
+					bas1(ni);
+				}
+			}
+		}
+		if(mouv == true) {
+			ajout();
+		}
+		return false;
+	}
+	function bas1(ni) {
+		if(!ni.startsWith(taille-1)) {
+			var tab = ni.split("");
+			var a = parseInt(tab[0]);
+			var b = parseInt(tab[1]);
+			for(var k=(a+1);k<=(taille-1);k++) {
+				var di = k+""+b;
+				if(document.getElementById(di).innerHTML != "") {
+					var x = parseInt(document.getElementById((k-1)+""+b).innerHTML);
+					var y = parseInt(document.getElementById(di).innerHTML);
+					if(x == y) {
+						if(array.indexOf(di) == -1){
+							array.push(di);
+							document.getElementById(di).innerHTML = (x+y);
+							document.getElementById(di).style.backgroundColor = couleur((x+y));
+							document.getElementById((k-1)+""+b).innerHTML = "";
+							document.getElementById((k-1)+""+b).style.backgroundColor = "#FFF";
+							mouv = true;
+							cpt += (x+y);
+							document.getElementById("score").innerHTML= cpt;
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(di).innerHTML = document.getElementById((k-1)+""+b).innerHTML;
+					document.getElementById(di).style.backgroundColor = document.getElementById((k-1)+""+b).style.backgroundColor;
+					document.getElementById((k-1)+""+b).innerHTML = "";
+					document.getElementById((k-1)+""+b).style.backgroundColor = "#FFF";
+					mouv = true;
+				}
+			}
+		}
+		return false;
+	}
+    function droite() {
+		mouv = false;
+		array = [];
+		for(var i=0;i<=(taille-1);i++) {
+			for(var j=(taille-1);j>=0;j--) {
+				var ni = i+""+j;
+				if(document.getElementById(ni).innerHTML != "") {
+					droite1(ni);
+				}
+			}
+		}
+		if(mouv == true) {
+			ajout();
+		}
+		return false;
+	}
+	function droite1(ni) {
+		if(!ni.endsWith(taille-1)) {
+			var tab = ni.split("");
+			var a = parseInt(tab[0]);
+			var b = parseInt(tab[1]);
+			for(var k=(b+1);k<=(taille-1);k++) {
+				var di = a+""+k;
+				if(document.getElementById(di).innerHTML != "") {
+					var x = parseInt(document.getElementById(a+""+(k-1)).innerHTML);
+					var y = parseInt(document.getElementById(di).innerHTML);
+					if(x == y) {
+						if(array.indexOf(di) == -1){
+							array.push(di);
+							document.getElementById(di).innerHTML = (x+y);
+							document.getElementById(di).style.backgroundColor = couleur((x+y));
+							document.getElementById(a+""+(k-1)).innerHTML = "";
+							document.getElementById(a+""+(k-1)).style.backgroundColor = "#FFF";
+							mouv = true;
+							cpt += (x+y);
+							document.getElementById("score").innerHTML= cpt;
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(di).innerHTML = document.getElementById(a+""+(k-1)).innerHTML;
+					document.getElementById(di).style.backgroundColor = document.getElementById(a+""+(k-1)).style.backgroundColor;
+					document.getElementById(a+""+(k-1)).innerHTML = "";
+					document.getElementById(a+""+(k-1)).style.backgroundColor = "#FFF";
+					mouv = true;
+				}
+			}
+		}
+		return false;
+	}
+    function gauche() {
+		mouv = false;
+		array = [];
+		for(var i=0;i<=(taille-1);i++) {
+			for(var j=0;j<=(taille-1);j++) {
+				var ni = i+""+j;
+				if(document.getElementById(ni).innerHTML != "") {
+					gauche1(ni);
+				}
+			}
+		}
+		if(mouv == true) {
+			ajout();
+		}
+		return false;
+	}
+	function gauche1(ni) {
+		if(!ni.endsWith(0)) {
+			var tab = ni.split("");
+			var a = parseInt(tab[0]);
+			var b = parseInt(tab[1]);
+			for(var k=(b-1);k>=0;k--) {
+				var di = a+""+k;
+				if(document.getElementById(di).innerHTML != "") {
+					var x = parseInt(document.getElementById(a+""+(k+1)).innerHTML);
+					var y = parseInt(document.getElementById(di).innerHTML);
+					if(x == y) {
+						if(array.indexOf(di) == -1){
+							array.push(di);
+							document.getElementById(di).innerHTML = (x+y);
+							document.getElementById(di).style.backgroundColor = couleur((x+y));
+							document.getElementById(a+""+(k+1)).innerHTML = "";
+							document.getElementById(a+""+(k+1)).style.backgroundColor = "#FFF";
+							mouv = true;
+							cpt += (x+y);
+							document.getElementById("score").innerHTML= cpt;
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(di).innerHTML = document.getElementById(a+""+(k+1)).innerHTML;
+					document.getElementById(di).style.backgroundColor = document.getElementById(a+""+(k+1)).style.backgroundColor;
+					document.getElementById(a+""+(k+1)).innerHTML = "";
+					document.getElementById(a+""+(k+1)).style.backgroundColor = "#FFF";
+					mouv = true;
+				}
+			}
+		}
+		return false;
+	}
+
+	function ajout(){    /*ajouter un element aléatoirement avec la valeur 2*/
+		var tab1=[];
+		for(var i=0; i<(taille-1); i++){
+			for(var j=0; j<=(taille-1); j++){
+				var k= i+""+j;
+				if(document.getElementById(k).innerHTML == ""){
+					tab1.push(k);
+					
+				}
+			}
+		}
+		rand(tab1);
+
+	}
+
+	function rand(tab1){
+		var ni= tab1[Math.floor(Math.random()*tab1.length)];
+		document.getElementById(ni).innerHTML="2";
+		document.getElementById(ni).style.backgroundColor= couleur(2);
+	}
+        
+			
+                        
+
+
+            charger();
+        ]]></script>
+        <footer>
+            <div class="footer-1">
+               
+            </div>
+        </footer>
+        
+    </body>
+</html>
